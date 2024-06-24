@@ -7,7 +7,7 @@ int previousState = LOW;
 
 // Timer variables
 unsigned long previousMillis = 0;   // Stores the last time the output was updated
-const long interval = 500;         // Interval in milliseconds (2 seconds)
+const long interval = 50;         // Interval in milliseconds (2 seconds)
 
 void setup() {
   Serial.begin(9600); // Initialize serial communication
@@ -33,12 +33,12 @@ void loop() {
   if (currentMillis - previousMillis >= interval) {
     // Calculate the frequency over the 2-second interval
     float frequency = count0 + count1; // Average frequency in Hz
-    float speed = frequency * 60.0/ (93.0 * 0.5); // Calculate speed in RPM (assuming 47 pulses per rotation)
+    float speed = frequency * 60.0/ (93.0 * 0.05); // Calculate speed in RPM (assuming 47 pulses per rotation)
 
     // Print the speed
-    Serial.print("Speed: ");
-    Serial.print(speed);
-    Serial.println(" RPM");
+    //Serial.print("Speed: ");
+    Serial.println(speed);
+    //Serial.print(" RPM");
 
     // Reset counts for the next interval
     count0 = 0;
