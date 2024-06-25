@@ -6,9 +6,10 @@ unsigned long startTime2;
 unsigned long endTime;
 unsigned long endTime3;
 unsigned long endTime2;
-unsigned long highDuration;
+unsigned long highDuration ;
 unsigned long endTime1;
-float rpm;
+float rpm = 0;
+
 
 const float targetRPM = 200.0; // Desired RPM
 const float kp = 1.5; // Proportional gain
@@ -18,17 +19,13 @@ const float kd = 0.0; // Derivative gain
 int pwmValue = 0; // PWM value to control the motor (0-255 for analogWrite)
 
 float integral = 0; // Integral term
+float error;
 float previousError = 0; // Previous error for derivative term
 unsigned long previousTime = 0; // Previous time for time difference
+float output;
 
-void setup() {
-  Serial.begin(9600); // Initialize serial communication
-  pinMode(pin, INPUT); // Set pin as input
-  pinMode(motorPin, OUTPUT);
-}
-
-void loop() {
-  // Wait for the pin to go HIGH
+unsigned long getPulseWidth(){
+    // Wait for the pin to go HIGH
   while (digitalRead(pin) == LOW);
   startTime = micros(); // Get the start time
 
@@ -53,24 +50,48 @@ void loop() {
   while (digitalRead(pin) == LOW);
   endTime3 = micros(); // Get the end time
 
-  highDuration = endTime3 - startTime; // Calculate the HIGH duration
-  rpm = 3920000/highDuration;
+  unsigned long highDuration1 = endTime3 - startTime; // Calculate the HIGH duration
+  return highDuration1;
+}
 
-  float error = targetRPM - rpm;
+int getPWM(float rpm){
+  error = targetRPM - rpm;
+
+  if (rpm == 0){
+    output = 0.1*error;
+  }
+  else{
   integral += error*highDuration/1000000;
   float derivative = 1000000*(error - previousError)/highDuration;
-
-  float output = kp*error + ki*integral + kd*derivative;
-
-  pwmValue = constrain(output, 0, 255);
-  analogWrite(motorPin, pwmValue);
   previousError = error;
-  //previousTime = currentTime;
+  
+  output = kp*error + ki*integral + kd*derivative;
+  }
+  
+  pwmValue = constrain(output, 0, 255);
+  //Serial.println(pwmValue);
+}
+void setup() {
+  Serial.begin(9600); // Initialize serial communication
+  pinMode(pin, INPUT); // Set pin as input
+  pinMode(motorPin, OUTPUT);
+}
+
+void loop() {
+  getPWM(rpm);
+  analogWrite (motorPin, pwmValue);
+  highDuration = getPulseWidth(); // Calculate the HIGH duration
+  Serial.println(highDuration);
+  rpm = 3920000/highDuration;
+
+  // getPWM(rpm);
+  // analogWrite (motorPin, pwmValue);
+
 
   //Serial.print("High Duration: ");
-  Serial.println(rpm);
+  //Serial.println(pwmValue);
   //Serial.println(pwmValue);
   //Serial.println(" microseconds");
+  // highDuration = getPulseWidth(); // Calculate the HIGH duration
 
-  //delay(1000); // Wait for 1 second before measuring again
 }
