@@ -1,5 +1,7 @@
 const int pin = 2; // Pin to measure
 const int motorPin = 3;
+const int reversePin = 4;
+const int brakePin = 5;
 unsigned long startTime;
 unsigned long startTime1;
 unsigned long startTime2;
@@ -11,7 +13,9 @@ unsigned long endTime1;
 float rpm = 0;
 
 
-const float targetRPM = 200.0; // Desired RPM
+const float targetRPM1 = 200.0; // Desired RPM
+const float targetRPM = fabs(targetRPM1);
+bool brake = false;
 const float kp = 1.5; // Proportional gain
 const float ki = 0.5; // Integral gain
 const float kd = 0.0; // Derivative gain
@@ -71,27 +75,36 @@ int getPWM(float rpm){
   pwmValue = constrain(output, 0, 255);
   //Serial.println(pwmValue);
 }
+
+void writePWM(){
+  getPWM(rpm);
+  analogWrite (motorPin, pwmValue);
+  highDuration = getPulseWidth(); // Calculate the HIGH duration
+  rpm = 3920000/highDuration;
+  //Serial.println(rpm);
+}
 void setup() {
   Serial.begin(9600); // Initialize serial communication
   pinMode(pin, INPUT); // Set pin as input
   pinMode(motorPin, OUTPUT);
+  pinMode(reversePin, OUTPUT);
+  pinMode(brakePin, OUTPUT);
 }
 
 void loop() {
-  getPWM(rpm);
-  analogWrite (motorPin, pwmValue);
-  highDuration = getPulseWidth(); // Calculate the HIGH duration
-  Serial.println(highDuration);
-  rpm = 3920000/highDuration;
-
-  // getPWM(rpm);
-  // analogWrite (motorPin, pwmValue);
-
-
-  //Serial.print("High Duration: ");
-  //Serial.println(pwmValue);
-  //Serial.println(pwmValue);
-  //Serial.println(" microseconds");
-  // highDuration = getPulseWidth(); // Calculate the HIGH duration
+  if (brake == false){
+    digitalWrite(brakePin, LOW);
+    if (targetRPM1 > 0){
+      digitalWrite(reversePin, HIGH);
+      writePWM();
+    }
+    else if (targetRPM1 <0 ){
+      digitalWrite(reversePin, LOW);
+      writePWM();
+    }
+  }
+  else if (brake == true){
+    digitalWrite(brakePin, HIGH);
+  }
 
 }
