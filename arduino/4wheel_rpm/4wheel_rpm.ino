@@ -1,7 +1,7 @@
 const int pulseCount = 6;
 const int numMotor = 4;
 const int speedPinArray[numMotor] = {22,23,24,25};
-const unsigned long refreshTime = 3000000;
+const unsigned long refreshTime = 300000000;
 unsigned long prevTimeArray[numMotor] = {0,0,0,0};
 unsigned long prevPulseWidth[numMotor] = {0,0,0,0};
 unsigned long currPulseWidth[numMotor] = {0,0,0,0};
@@ -76,7 +76,7 @@ void loop() {
     else{
     if(currTime - prevTimeArray[motor] < refreshTime){
       currPulseWidth[motor] = prevPulseWidth[motor];}
-    if (currTime - prevTimeArray[0] > refreshTime){
+    if (currTime - prevTimeArray[motor] > refreshTime){
       currPulseWidth[motor] = 0;
       Serial.println(0);
       prevPulseWidth[motor] = currPulseWidth[motor];
@@ -97,5 +97,5 @@ void loop() {
       rpmArray[motor] = 0;
     }
   }
-// Serial.println(rpmArray[0]);
+ Serial.println(rpmArray[0]);
   }

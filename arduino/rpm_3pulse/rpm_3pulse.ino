@@ -1,4 +1,4 @@
-const int pin = 3; // Pin to measure
+const int pin = 22; // Pin to measure
 unsigned long startTime;
 unsigned long startTime1;
 unsigned long startTime2;
@@ -41,7 +41,7 @@ void loop() {
   endTime3 = micros(); // Get the end time
 
   highDuration = endTime3 - startTime; // Calculate the HIGH duration
-  rpm = 1321860/highDuration;   
+  rpm = 4070000/highDuration;   
 
   //Serial.print("High Duration: ");
   Serial.println(rpm);

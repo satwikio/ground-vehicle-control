@@ -1,4 +1,4 @@
-const int speedPin = 2; // Pin to measure the motor speed
+const int speedPin = 22; // Pin to measure the motor speed
 const int motorPin = 3; // Pin to control the motor speed (PWM)
 const int reversePin = 4; // Pin to control motor direction
 const int brakePin = 5; // Pin to control motor brake
@@ -76,7 +76,7 @@ void writePWM() {
   getPWM(rpm); // Calculate the new PWM value
   analogWrite(motorPin, pwmValue); // Write the PWM value to the motor
   highDuration = getPulseWidth(); // Calculate the HIGH duration of the pulse
-  rpm = (0.34*3920000) / highDuration; // Calculate the RPM based on pulse duration
+  rpm = 4070000 / highDuration; // Calculate the RPM based on pulse duration
   //Serial.println(rpm); // Uncomment to print the RPM to the Serial Monitor
 }
 

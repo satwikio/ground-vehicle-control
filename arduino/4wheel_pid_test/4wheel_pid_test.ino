@@ -2,16 +2,35 @@ const int pulseCount = 7;
 const int numMotor = 4;
 const int sampleCount = 40;
 const int speedPinArray[numMotor] = {22,23,24,25};
-const unsigned long refreshTime = 3000000;
+const int motorPinArray[numMotor] = {2,3,4,5};
+const int reversePinArray[numMotor] = {26,27,28,29};
+const int brakePinArray[numMotor] = {30,31,32,33};
+const unsigned long refreshTime = 300000;
 unsigned long prevTimeArray[numMotor] = {0,0,0,0};
 unsigned long prevPulseWidth[numMotor] = {0,0,0,0};
 unsigned long currPulseWidth[numMotor] = {0,0,0,0};
 int prevSignalArray[numMotor] = {0,0,0,0};
+//bool brakeArray[numMotor] = {false,false,false,false};
 unsigned long currTime;
 int currSignalArray[numMotor];
 unsigned long impulseTimeArray[numMotor][pulseCount] = {};
 float rpmArray[numMotor][sampleCount];
 float rpm;
+
+//float targetRpmArray[numMotor] = {200.0, 200.00, 200.00, 200.00}; // Desired RPM, can be positive or negative
+//const float absTargetRpmArray[numMotor]; for(int i; i<numMotor; i++){fabs(targetRpmArray[i]);} // Absolute value of the desired RPM
+//bool brakeArray[numMotor] = {false,false,false,false}; // Variable to control the brake state
+
+//const float kp = 1.5; // Proportional gain for PID controller
+//const float ki = 0.5; // Integral gain for PID controller
+//const float kd = 0.0; // Derivative gain for PID controller (not used)
+
+//float integralArray[numMotor] = {}; // Integral term for PID controller
+//float errorArray[numMotor]; // Current error between desired RPM and actual RPM
+//float previousErrorArray[numMotor] = {}; // Previous error for derivative term
+unsigned long previousTimeArray[numMotor] = {}; // Previous time for time difference calculation
+//float outputArray[numMotor]; // Output value of the PID controller
+//int pwmArray[numMotor] = {}; // PWM value to control the motor (0-255 for analogWrite)
 
 void calcPulseWidth(int motor, int cases){
   prevSignalArray[motor] = currSignalArray[motor];
@@ -40,7 +59,7 @@ void setup() {
   pinMode(speedPinArray[1], INPUT);
   pinMode(speedPinArray[2], INPUT);
   pinMode(speedPinArray[3], INPUT);
-
+  
 }
 
 void loop() {
@@ -89,25 +108,24 @@ void loop() {
       currPulseWidth[motor] = prevPulseWidth[motor];}
     if (currTime - prevTimeArray[motor] > refreshTime){
       currPulseWidth[motor] = 0;
-//      Serial.println(0);
+      Serial.println(0);
       prevPulseWidth[motor] = currPulseWidth[motor];
-//      impulseTimeArray = {
-//  {0,0,0,0,0,0},
-//  {0,0,0,0,0,0},
-//  {0,0,0,0,0,0},
-//  {0,0,0,0,0,0}};
+      for (int i=0; i<numMotor; i++ ){
+        impulseTimeArray[motor][i] = 0;
+      }
       }
       }
   }
 
-  for(int motor=0; motor<numMotor; motor++){
+  for(int motor=0; motor<1; motor++){
     if (currPulseWidth[motor] != 0){
-      rpm = 3487555.00 / currPulseWidth[motor];
+      rpm = 4068814.00 / currPulseWidth[motor];
+      Serial.println(rpm);
     }
     else{
       rpm = 0;
     }
     filterRpm(motor,rpm);
   }
- Serial.println(rpmArray[0][5]);
-  }
+  Serial.println(rpmArray[0][pulseCount-1]);
+}

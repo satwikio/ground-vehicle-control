@@ -1,4 +1,4 @@
-const int pulseCount = 7;
+const int pulseCount = 6;
 const int numMotor = 4;
 const int sampleCount = 40;
 const int speedPinArray[numMotor] = {22,23,24,25};
@@ -55,32 +55,29 @@ void loop() {
 //        Serial.println(0);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,1);
 //        Serial.println(1);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,2);
 //        Serial.println(2);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,3);
 //        Serial.println(3);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,4);
 //        Serial.println(4);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0){
         calcPulseWidth(motor,5);
 //        Serial.println(5);
-      }
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] == 0){
-        calcPulseWidth(motor,6);
 }
           
         }
