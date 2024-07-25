@@ -76,7 +76,7 @@ void writePWM() {
   getPWM(rpm); // Calculate the new PWM value
   analogWrite(motorPin, pwmValue); // Write the PWM value to the motor
   highDuration = getPulseWidth(); // Calculate the HIGH duration of the pulse
-  rpm = 3920000 / highDuration; // Calculate the RPM based on pulse duration
+  rpm = (0.34*3920000) / highDuration; // Calculate the RPM based on pulse duration
   //Serial.println(rpm); // Uncomment to print the RPM to the Serial Monitor
 }
 
@@ -102,4 +102,3 @@ void loop() {
     digitalWrite(brakePin, HIGH); // Enable the brake
   }
 }
-
