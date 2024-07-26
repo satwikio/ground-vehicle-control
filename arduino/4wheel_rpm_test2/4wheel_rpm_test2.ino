@@ -34,16 +34,7 @@ void filterRpm(int motor, float rpm){
   rpmArray[motor][sampleCount-1] = rpm;
 }
 
-void setup() {
-  Serial.begin(2000000);
-  pinMode(speedPinArray[0], INPUT);
-  pinMode(speedPinArray[1], INPUT);
-  pinMode(speedPinArray[2], INPUT);
-  pinMode(speedPinArray[3], INPUT);
-
-}
-
-void loop() {
+void calcRpm(){
   for (int i=0; i<numMotor; i++){
     currSignalArray[i] = digitalRead(speedPinArray[i]);}
   currTime = micros();
@@ -55,29 +46,32 @@ void loop() {
 //        Serial.println(0);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,1);
 //        Serial.println(1);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,2);
 //        Serial.println(2);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,3);
 //        Serial.println(3);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,4);
 //        Serial.println(4);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] != 0){
         calcPulseWidth(motor,5);
 //        Serial.println(5);
+      }
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] == 0){
+        calcPulseWidth(motor,6);
 }
           
         }
@@ -106,5 +100,19 @@ void loop() {
     }
     filterRpm(motor,rpm);
   }
- Serial.println(rpmArray[0][5]);
+// Serial.println(rpmArray[0][pulseCount-1]);
+}
+
+void setup() {
+  Serial.begin(2000000);
+  pinMode(speedPinArray[0], INPUT);
+  pinMode(speedPinArray[1], INPUT);
+  pinMode(speedPinArray[2], INPUT);
+  pinMode(speedPinArray[3], INPUT);
+
+}
+
+void loop() {
+  calcRpm();
+ Serial.println(rpmArray[0][pulseCount-1]);
   }
