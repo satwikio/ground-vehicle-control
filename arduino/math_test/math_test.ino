@@ -2,9 +2,9 @@
 #include <math.h>
 float l = 2;
 float b = 1;
-float v = 2;
-float omega = 0.001;
-float alpha = 0.;
+float v = 1;
+float omega = 1;
+float alpha = 0;
 float wheelRadius = 0.185;
 const int numMotor = 4;
 float servoRate = 3.5;
@@ -48,24 +48,25 @@ float outputArray[numMotor]; // Output value of the PID controller
 int pwmArray[numMotor] = {}; // PWM value to control the motor
 
 void calcSpeedAngle(float v, float omega,float alpha){
+  float r = fabs(v)/omega;
+  if (fabs(r)>=b/2){
   if (fabs(omega)>minOmega){
-  float r = fabs(v/omega);
   float fac;
   for (int motor = 0; motor<numMotor; motor++){
     if (motor==0 || motor ==1){fac = 1;}else{fac=-1;} 
     float wheelVec[2] = {fac*(b/2) + r*cos(alpha), pow(-1,motor)*(l/2) - r*sin(alpha)};
 //    float wheelVel = omega/(pow(pow(wheelVec[0],2) + pow(wheelVec[1],2),0.5);
-    float wheelVel = omega / sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
-    Serial.println(wheelVel);
+    float wheelVel = (v/fabs(v))*fabs(omega) * sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
     if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
     else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
-    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
-    if (omega>0){targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
+    Serial.println(targetRpmArray[0]);
+//    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
+    {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
     prevServoArray[motor] = targetServoArray[motor];
     wheelServos[motor].write(targetServoArray[motor]+90);}
   }
-  else{
+  else if (fabs(omega)<minOmega){
     float rpm = (v/wheelRadius)*(30/PI);
     for (int motor = 0; motor<numMotor; motor++){
       targetRpmArray[motor] = rpm;
@@ -74,6 +75,24 @@ void calcSpeedAngle(float v, float omega,float alpha){
       prevServoArray[motor] = targetServoArray[motor];
       wheelServos[motor].write(targetServoArray[motor]+90);
     }
+  }}
+  else if (fabs(r)<(b/2)){
+    if (fabs(omega)>minOmega){
+  float fac;
+  for (int motor = 0; motor<numMotor; motor++){
+    if (motor==0 || motor ==1){fac = 1;}else{fac=-1;} 
+    float wheelVec[2] = {fac*(b/2) + r*cos(alpha), pow(-1,motor)*(l/2) - r*sin(alpha)};
+//    float wheelVel = omega/(pow(pow(wheelVec[0],2) + pow(wheelVec[1],2),0.5);
+    float wheelVel = fac*omega* sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
+    if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
+    else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
+    Serial.println(targetRpmArray[0]);
+//    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
+    {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
+    diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
+    prevServoArray[motor] = targetServoArray[motor];
+    wheelServos[motor].write(targetServoArray[motor]+90);}
+  }
   }
 }
 
@@ -109,7 +128,7 @@ int getPwm(int motor) {
     previousErrorArray[motor] = errorArray[motor]; // Update previous error
     outputArray[motor] = kp * errorArray[motor] + ki * integralArray[motor] ; //+ kd * derivativeArray[motor]; // Calculate PID output
     pwmArray[motor] = constrain(outputArray[motor], 0, 255); // Constrain the output to valid PWM range
-    Serial.println(pwmArray[motor]);
+//    Serial.println(pwmArray[motor]);
     analogWrite(motorPinArray[motor], pwmArray[motor]);
 //    Serial.println(pwmArray[motor]);
 //  }
