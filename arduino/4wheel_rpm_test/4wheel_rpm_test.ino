@@ -102,12 +102,12 @@ void loop() {
 
   for(int motor=0; motor<numMotor; motor++){
     if (currPulseWidth[motor] != 0){
-      rpm = 3487555.00 / currPulseWidth[motor];
+      rpm = 1395022.00 / currPulseWidth[motor];
     }
     else{
       rpm = 0;
     }
     filterRpm(motor,rpm);
   }
- Serial.println(rpmArray[0][5]);
+ Serial.println(rpmArray[0][0]);
   }

@@ -2,8 +2,8 @@
 #include <math.h>
 float l = 2;
 float b = 1;
-float v = 1;
-float omega = 1;
+float v = 1.2;
+float omega = 0;
 float alpha = 0;
 float wheelRadius = 0.185;
 const int numMotor = 4;
