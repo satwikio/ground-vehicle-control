@@ -1,8 +1,8 @@
 #include <Servo.h>  // Include the Servo library
 #include <math.h>
-float l = 2;
-float b = 1;
-float v = 1;
+float l = 0.59;
+float b = 0.41;
+float v = 2 ;
 float omega = 0;
 float alpha = 0;
 float wheelRadius = 0.185;
@@ -12,12 +12,15 @@ float minOmega = 0.000001;
 Servo wheelServos[numMotor];
 const int pulseCount = 7;
 const int sampleCount = 10;
-const int speedPinArray[numMotor] = {22,23,24,25};
-const int hallPinArray[numMotor] = {34,35,36,37};
-const int motorPinArray[numMotor] = {2,3,4,5};
-const int reversePinArray[numMotor] = {26,27,28,29};
-const int brakePinArray[numMotor] = {30,31,32,33};
-const int servoPinArray[numMotor] = {6,7,8,9};
+int zeroAngle[numMotor] = {97,90,96,90};
+int ninetyAngle = 66;
+const int speedPinArray[numMotor] = {24,25, 26, 27};
+const int hallPinArray[numMotor] = {34,35,36,37
+};
+const int motorPinArray[numMotor] = {3,4,5,6};
+const int reversePinArray[numMotor] = {30,31,32,33};
+const int brakePinArray[numMotor] = {36,37,38,39};
+const int servoPinArray[numMotor] = {7,8,9,10};
 const unsigned long refreshTime = 300000;
 unsigned long prevTimeArray[numMotor] = {0,0,0,0};
 unsigned long prevPulseWidth[numMotor] = {0,0,0,0};
@@ -50,49 +53,57 @@ int pwmArray[numMotor] = {}; // PWM value to control the motor
 
 void calcSpeedAngle(float v, float omega,float alpha){
   float r = fabs(v)/omega;
+//  Serial.println(r);
   if (fabs(r)>=b/2){
   if (fabs(omega)>minOmega){
-  float fac;
+  float fac1;
+  float fac2;
   for (int motor = 0; motor<numMotor; motor++){
-    if (motor==0 || motor ==1){fac = 1;}else{fac=-1;} 
-    float wheelVec[2] = {fac*(b/2) + r*cos(alpha), pow(-1,motor)*(l/2) - r*sin(alpha)};
-//    float wheelVel = omega/(pow(pow(wheelVec[0],2) + pow(wheelVec[1],2),0.5);
+    if (motor==0 || motor ==1){fac1 = 1;}else{fac1=-1;}
+    if (motor==0 || motor ==3){fac2 = 1;}else{fac2=-1;} 
+    float wheelVec[2] = {fac1*(b/2) + r*cos(alpha), fac2*(l/2) - r*sin(alpha)};
+//    Serial.println(cos(alpha));
     float wheelVel = (v/fabs(v))*fabs(omega) * sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
+//    Serial.println(wheelVel);
     if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
     else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
-    Serial.println(targetRpmArray[0]);
+    Serial.println(map((zeroAngle[motor] - 90), 0, 180, -1*ninetyAngle, ninetyAngle));
+
 //    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
     prevServoArray[motor] = targetServoArray[motor];
-    wheelServos[motor].write(targetServoArray[motor]+90);}
+    wheelServos[motor].write(zeroAngle[motor] - map(targetServoArray[motor], -90, 90, -1*ninetyAngle, ninetyAngle));}
   }
   else if (fabs(omega)<minOmega){
     float rpm = (v/wheelRadius)*(30/PI);
     for (int motor = 0; motor<numMotor; motor++){
       targetRpmArray[motor] = rpm;
-      targetServoArray[motor] = 0;
+      targetServoArray[motor] = (180/PI)*alpha;
       diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
       prevServoArray[motor] = targetServoArray[motor];
-      wheelServos[motor].write(targetServoArray[motor]+90);
+      wheelServos[motor].write(zeroAngle[motor] - map(targetServoArray[motor], -90, 90, -1*ninetyAngle, ninetyAngle));
     }
   }}
   else if (fabs(r)<(b/2)){
     if (fabs(omega)>minOmega){
-  float fac;
+  float fac1;
+  float fac2;
   for (int motor = 0; motor<numMotor; motor++){
-    if (motor==0 || motor ==1){fac = 1;}else{fac=-1;} 
-    float wheelVec[2] = {fac*(b/2) + r*cos(alpha), pow(-1,motor)*(l/2) - r*sin(alpha)};
+    if (motor==0 || motor ==1){fac1 = 1;}else{fac1=-1;}
+    if (motor==0 || motor ==3){fac2 = 1;}else{fac2=-1;} 
+    float wheelVec[2] = {fac1*(b/2) + r*cos(alpha), fac2*(l/2) - r*sin(alpha)};
 //    float wheelVel = omega/(pow(pow(wheelVec[0],2) + pow(wheelVec[1],2),0.5);
-    float wheelVel = fac*omega* sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
+    float wheelVel = fac1*omega* sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
     if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
     else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
-    Serial.println(targetRpmArray[0]);
+//    Serial.println(targetRpmArray[0]);
 //    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
     prevServoArray[motor] = targetServoArray[motor];
-    wheelServos[motor].write(targetServoArray[motor]+90);}
+  
+    wheelServos[motor].write(zeroAngle[motor] - map(targetServoArray[motor], -90, 90, -1*ninetyAngle, ninetyAngle));}
   }
   }
 }
@@ -116,6 +127,7 @@ void filterRpm(int motor, float rpm){
   for(int i=0; i<sampleCount-1; i++){
     rpmArray[motor][i] = rpmArray[motor][i+1];}
   rpmArray[motor][sampleCount-1] = rpm;
+//  Serial.println(rpmArray[1][sampleCount-1]);
 }
 
 int getPwm(int motor) {
@@ -141,46 +153,51 @@ int getPwm(int motor) {
 }
 
 void calcRpm(){
+//  for (int i=0; i<numMotor; i++){
+//    if (fabs(targetRpmArray[i]) >= 50){
+//    currSignalArray[i] = digitalRead(speedPinArray[i]);}
+//    else if (fabs(targetRpmArray[i]) < 50){
+//      currSignalArray[i] = digitalRead(hallPinArray[i]);}
+//    }
+
   for (int i=0; i<numMotor; i++){
-    if (fabs(targetRpmArray[i]) >= 50){
-    currSignalArray[i] = digitalRead(speedPinArray[i]);}
-    else if (fabs(targetRpmArray[i]) < 50){
-      currSignalArray[i] = digitalRead(hallPinArray[i]);}
+    currSignalArray[i] = digitalRead(speedPinArray[i]);
     }
+//    Serial.println(currSignalArray[0]);
   currTime = micros();
 
   for(int motor=0; motor<numMotor; motor++){
     if(currSignalArray[motor] != prevSignalArray[motor]){
-      if (impulseTimeArray[motor][0] != 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] != 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][5] != 0 ){
         calcPulseWidth(motor,0);
 //        Serial.println(0);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] != 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][5] != 0){
         calcPulseWidth(motor,1);
 //        Serial.println(1);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] != 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][5] != 0){
         calcPulseWidth(motor,2);
 //        Serial.println(2);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] != 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][5] != 0){
         calcPulseWidth(motor,3);
 //        Serial.println(3);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] != 0 && impulseTimeArray[motor][5] != 0){
         calcPulseWidth(motor,4);
 //        Serial.println(4);
 }
         
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] != 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][5] != 0){
         calcPulseWidth(motor,5);
 //        Serial.println(5);
       }
-      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][4] == 0){
+      if (impulseTimeArray[motor][0] == 0 && impulseTimeArray[motor][1] == 0 && impulseTimeArray[motor][2] == 0 && impulseTimeArray[motor][3] == 0 && impulseTimeArray[motor][4] == 0 && impulseTimeArray[motor][5] == 0){
         calcPulseWidth(motor,6);
 }
           
@@ -199,13 +216,17 @@ void calcRpm(){
 
   for(int motor=0; motor<numMotor; motor++){
     float speedFactor;
-    if (targetRpmArray[motor] >= 50){speedFactor = 4068814.00;}
-    else{speedFactor =1395022.00; }
+//    if (targetRpmArray[motor] >= 50){speedFactor = 4068814.00;}
+//    else{speedFactor =1395022.00; }
+speedFactor = 1395022.00;
     if (currPulseWidth[motor] != 0){
       rpm = speedFactor / currPulseWidth[motor];
+//      Serial.println(rpm);
+      
     }
     else{
       rpm = 0;
+//      Serial.println(111);
     }
     filterRpm(motor,rpm);
   }  
@@ -250,13 +271,14 @@ void loop() {
 //    Serial.println(2);
     if (brakeArray[motor] == false) { // If the brake is not engaged
     digitalWrite(brakePinArray[motor], LOW); // Disable the brake
+    if (motor == 0 || motor == 2){targetRpmArray[motor] = -targetRpmArray[motor];}
     if (targetRpmArray[motor] > 0) {
-      digitalWrite(reversePinArray[motor], HIGH); // Set motor direction to forward
+      digitalWrite(reversePinArray[motor], LOW); // Set motor direction to forward
       getPwm(motor); // Update motor speed
 //      Serial.println(1);
     } else if (targetRpmArray[motor] < 0) {
       targetRpmArray[motor] = -targetRpmArray[motor];
-      digitalWrite(reversePinArray[motor], LOW); // Set motor direction to reverse
+      digitalWrite(reversePinArray[motor], HIGH); // Set motor direction to reverse
       getPwm(motor); // Update motor speed
 //      Serial.println(0);
     }
@@ -265,10 +287,5 @@ void loop() {
   }
   
   }
-  Serial.print("vx: "); Serial.println(vx);
-        Serial.print("vy: "); Serial.println(vy);
-        Serial.print("v: "); Serial.println(v);
-        Serial.print("alpha: "); Serial.println(alpha);
-        Serial.print("omega: "); Serial.println(omega);
-// Serial.println(rpmArray[0][pulseCount-1]);
+
   }

@@ -2,7 +2,7 @@
 #include <math.h>
 float l = 0.59;
 float b = 0.41;
-float v = 1.2;
+float v = 1;
 float omega = 0;
 float alpha = 0;
 float wheelRadius = 0.185;
@@ -59,7 +59,7 @@ void calcSpeedAngle(float v, float omega,float alpha){
     float wheelVel = (v/fabs(v))*fabs(omega) * sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
     if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
     else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
-    Serial.println(targetRpmArray[0]);
+//    Serial.println(targetRpmArray[0]);
 //    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
@@ -86,7 +86,7 @@ void calcSpeedAngle(float v, float omega,float alpha){
     float wheelVel = fac*omega* sqrt(pow(wheelVec[0], 2) + pow(wheelVec[1], 2));
     if(v<0){targetRpmArray[motor] = -(wheelVel/wheelRadius)*(30/PI);}
     else{targetRpmArray[motor] = (wheelVel/wheelRadius)*(30/PI);}
-    Serial.println(targetRpmArray[0]);
+//    Serial.println(targetRpmArray[0]);
 //    if (omega<0){targetServoArray[motor-2] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     {targetServoArray[motor] = (180/PI)*atan(wheelVec[1]/wheelVec[0]);}
     diffServoArray[motor] = fabs(targetServoArray[motor]-prevServoArray[motor]);
@@ -199,6 +199,7 @@ void calcRpm(){
   for(int motor=0; motor<numMotor; motor++){
     if (currPulseWidth[motor] != 0){
       rpm = 4068814.00 / currPulseWidth[motor];
+      Serial.println(rpm);
     }
     else{
       rpm = 0;

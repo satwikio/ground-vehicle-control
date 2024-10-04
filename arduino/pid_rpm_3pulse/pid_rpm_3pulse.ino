@@ -1,13 +1,13 @@
-const int speedPin = 22; // Pin to measure the motor speed
+const int speedPin = 23; // Pin to measure the motor speed
 const int motorPin = 3; // Pin to control the motor speed (PWM)
-const int reversePin = 4; // Pin to control motor direction
-const int brakePin = 5; // Pin to control motor brake
+const int reversePin = 27; // Pin to control motor direction
+const int brakePin = 31; // Pin to control motor brake
 unsigned long startTime; // Variable to store the start time of the pulse
 unsigned long endTime; // Variable to store the end time of the pulse
 unsigned long highDuration; // Variable to store the duration of the high pulse
 float rpm = 0; // Variable to store the calculated RPM
 
-const float targetRPM1 = 200.0; // Desired RPM, can be positive or negative
+const float targetRPM1 = 100.0; // Desired RPM, can be positive or negative
 const float targetRPM = fabs(targetRPM1); // Absolute value of the desired RPM
 bool brake = false; // Variable to control the brake state
 
@@ -92,7 +92,7 @@ void loop() {
   if (brake == false) { // If the brake is not engaged
     digitalWrite(brakePin, LOW); // Disable the brake
     if (targetRPM1 > 0) {
-      digitalWrite(reversePin, HIGH); // Set motor direction to forward
+      digitalWrite(reversePin, LOW); // Set motor direction to forward
       writePWM(); // Update motor speed
     } else if (targetRPM1 < 0) {
       digitalWrite(reversePin, LOW); // Set motor direction to reverse

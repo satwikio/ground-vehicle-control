@@ -15,9 +15,9 @@ volatile bool newFrame = false;
 
 
 
-float l = 2;
-float b = 1;
-float v = 1;
+float l = 0.59;
+float b = 0.41;
+float v = 0;
 float omega = 0;
 float alpha = 0;
 float wheelRadius = 0.185;
@@ -340,13 +340,13 @@ void loop() {
         interrupts();
         
         // Mapping channels to respective variables
-        float vx = mapChannel(makeZero(currentValues[1],40), -1.0, 1.0);  // Channel 2 (0-based index 1)
-        float vy = -1*mapChannel(makeZero(currentValues[0],30), -1.0, 1.0);  // Channel 1 (0-based index 0)
-        float omega = -1*mapChannel(makeZero(currentValues[3],30), -1.0, 1.0); // Channel 4 (0-based index 3)
+        float vx = mapChannel(makeZero(currentValues[1],50), -1.0, 1.0);  // Channel 2 (0-based index 1)
+        float vy = -1*mapChannel(makeZero(currentValues[0],50), -1.0, 1.0);  // Channel 1 (0-based index 0)
+         omega = -1*mapChannel(makeZero(currentValues[3],30), -1.0, 1.0); // Channel 4 (0-based index 3)
 
         // Calculate v and alpha
-        float v = correctV(sqrt(vx * vx + vy * vy), vx , vy);    // Velocity magnitude
-        float alpha = correctAlpha(atan2(vy, vx));          // Orientation angle
+        v = correctV(sqrt(vx * vx + vy * vy), vx , vy);    // Velocity magnitude
+        alpha = correctAlpha(atan2(vy, vx));          // Orientation angle
 
         // Printing values to the serial monitor for debugging
         Serial.print("vx: "); Serial.println(vx);

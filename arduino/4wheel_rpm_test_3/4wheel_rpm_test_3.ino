@@ -2,7 +2,7 @@ const int pulseCount = 7;
 const int numMotor = 4;
 const int sampleCount = 10;
 const int speedPinArray[numMotor] = {22,23,24,25};
-const int motorPinArray[numMotor] = {2,3,4,5};
+const int motorPinArray[numMotor] = {3,4,5,6};
 const int reversePinArray[numMotor] = {26,27,28,29};
 const int brakePinArray[numMotor] = {30,31,32,33};
 const unsigned long refreshTime = 300000;
@@ -17,7 +17,7 @@ unsigned long impulseTimeArray[numMotor][pulseCount] = {};
 float rpmArray[numMotor][sampleCount];
 float rpm;
 
-float targetRpmArray[numMotor] = {80.0, 200.00, 200.00, 200.00}; // Desired RPM, can be positive or negative
+float targetRpmArray[numMotor] = {80.0, 100.00, 200.00, 200.00}; // Desired RPM, can be positive or negative
 
 const float kp = 1.5; // Proportional gain for PID controller
 const float ki = 0.5; // Integral gain for PID controller
